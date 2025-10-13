@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:absensi_ruangan/pages/register_name_page.dart';
 import 'package:absensi_ruangan/widgets/map_view.dart';
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:image_picker/image_picker.dart';
@@ -14,8 +15,10 @@ import 'izin_page.dart';
 import 'map_page.dart';
 
 class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
   @override
-  _HomePageState createState() => _HomePageState();
+  State<HomePage> createState() => _HomePageState();
 }
 
 class _HomePageState extends State<HomePage> {
@@ -36,7 +39,7 @@ class _HomePageState extends State<HomePage> {
 
   void _startTimer() {
     // Update time every second
-    Timer.periodic(Duration(seconds: 1), (timer) {
+    Timer.periodic(const Duration(seconds: 1), (timer) {
       if (mounted) {
         setState(() {
           _currentTime = DateFormat('HH:mm:ss').format(DateTime.now());
@@ -54,6 +57,7 @@ class _HomePageState extends State<HomePage> {
 
       if (user != null) {
         final profile = await supabaseService.getUserProfile(user.id);
+        if (!mounted) return;
         setState(() {
           _userProfile = profile;
           if (_userProfile != null) {
@@ -65,12 +69,14 @@ class _HomePageState extends State<HomePage> {
         if (profile == null || profile['name'] == null) {
           Navigator.pushReplacement(
             context,
-            MaterialPageRoute(builder: (context) => RegisterNamePage()),
+            MaterialPageRoute(builder: (context) => const RegisterNamePage()),
           );
         }
       }
     } catch (e) {
-      print('Error loading profile: $e');
+      if (kDebugMode) {
+        print('Error loading profile: $e');
+      }
     }
   }
 
@@ -88,13 +94,16 @@ class _HomePageState extends State<HomePage> {
         rooms,
       );
 
+      if (!mounted) return;
       setState(() {
         _currentPosition = position;
         _rooms = rooms;
         _currentRoom = detectedRoomResult != null ? detectedRoomResult['room'] : null;
       });
     } catch (e) {
-      print('Error checking location: $e');
+      if (kDebugMode) {
+        print('Error checking location: $e');
+      }
     }
   }
 
@@ -128,17 +137,20 @@ class _HomePageState extends State<HomePage> {
         throw Exception('Anda tidak berada di area ruangan manapun.');
       }
 
+      if (!mounted) return;
       // 4. Ambil foto selfie
       final XFile? photo = await imageService.takePicture();
       if (photo == null) {
         // User cancelled the camera
-        setState(() => _isLoading = false);
+        if (mounted) {
+          setState(() => _isLoading = false);
+        }
         return;
       }
 
       // 5. Upload foto ke storage
       final fileName = imageService.generateFileName(user.id);
-      final photoUrl = await supabaseService.uploadAttendancePhoto(photo.path, fileName);
+      final photoUrl = await supabaseService.uploadPhoto('attendance_photos', photo.path, fileName);
 
       // 6. Simpan data absensi
       await supabaseService.submitAttendance({
@@ -150,10 +162,12 @@ class _HomePageState extends State<HomePage> {
         'timestamp': DateTime.now().toIso8601String(),
       });
 
+      if (!mounted) return;
       // 7. Tampilkan konfirmasi sukses
       _showSuccessDialog(detectionResult['room']['name']);
 
     } catch (e) {
+      if (!mounted) return;
       _showErrorDialog(e.toString());
     } finally {
       if(mounted){
@@ -168,7 +182,7 @@ class _HomePageState extends State<HomePage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Row(
+        title: const Row(
           children: [
             Icon(Icons.check_circle, color: Colors.green),
             SizedBox(width: 8),
@@ -179,8 +193,8 @@ class _HomePageState extends State<HomePage> {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text('✅ Absensi berhasil disimpan'),
-            SizedBox(height: 8),
+            const Text('✅ Absensi berhasil disimpan'),
+            const SizedBox(height: 8),
             Text('Nama: ${_userProfile?['name'] ?? ''}'),
             Text('Ruangan: $roomName'),
             Text('Waktu: ${DateFormat('dd/MM/yyyy HH:mm').format(DateTime.now())}'),
@@ -189,7 +203,7 @@ class _HomePageState extends State<HomePage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('OK'),
+            child: const Text('OK'),
           ),
         ],
       ),
@@ -200,7 +214,7 @@ class _HomePageState extends State<HomePage> {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: Row(
+        title: const Row(
           children: [
             Icon(Icons.error, color: Colors.red),
             SizedBox(width: 8),
@@ -211,7 +225,7 @@ class _HomePageState extends State<HomePage> {
         actions: [
           TextButton(
             onPressed: () => Navigator.of(context).pop(),
-            child: Text('OK'),
+            child: const Text('OK'),
           ),
         ],
       ),
@@ -223,15 +237,15 @@ class _HomePageState extends State<HomePage> {
       child: ElevatedButton(
         onPressed: _isLoading ? null : _handleAbsen,
         style: ElevatedButton.styleFrom(
-          backgroundColor: Color(0xFF2E4B9C),
+          backgroundColor: const Color(0xFF2E4B9C),
           foregroundColor: Colors.white,
-          padding: EdgeInsets.symmetric(vertical: 16),
+          padding: const EdgeInsets.symmetric(vertical: 16),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
         ),
         child: _isLoading
-            ? SizedBox(
+            ? const SizedBox(
                 height: 20,
                 width: 20,
                 child: CircularProgressIndicator(
@@ -239,7 +253,7 @@ class _HomePageState extends State<HomePage> {
                   color: Colors.white,
                 ),
               )
-            : Row(
+            : const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Icon(Icons.camera_alt),
@@ -258,10 +272,10 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('AbsensiRuangan'),
+        title: const Text('AbsensiRuangan'),
         actions: [
           IconButton(
-            icon: Icon(Icons.logout),
+            icon: const Icon(Icons.logout),
             onPressed: () async {
               final supabaseService = Provider.of<SupabaseService>(context, listen: false);
               await supabaseService.signOut();
@@ -270,17 +284,17 @@ class _HomePageState extends State<HomePage> {
         ],
       ),
       body: Padding(
-        padding: EdgeInsets.all(16.0),
+        padding: const EdgeInsets.all(16.0),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // User Info Card
             Card(
               child: Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Row(
                   children: [
-                    CircleAvatar(
+                    const CircleAvatar(
                       radius: 25,
                       backgroundColor: Color(0xFF2E4B9C),
                       child: Icon(
@@ -288,22 +302,22 @@ class _HomePageState extends State<HomePage> {
                         color: Colors.white,
                       ),
                     ),
-                    SizedBox(width: 16),
+                    const SizedBox(width: 16),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             _userProfile?['name'] ?? 'Loading...',
-                            style: TextStyle(
+                            style: const TextStyle(
                               fontSize: 18,
                               fontWeight: FontWeight.bold,
                             ),
                           ),
-                          SizedBox(height: 4),
+                          const SizedBox(height: 4),
                           Text(
                             _userProfile?['email'] ?? '',
-                            style: TextStyle(color: Colors.grey),
+                            style: const TextStyle(color: Colors.grey),
                           ),
                         ],
                       ),
@@ -312,28 +326,28 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Time and Date
             Card(
               child: Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Waktu Sekarang',
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.grey,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
                       _currentTime.isEmpty
                           ? 'Loading...'
                           : '${DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(DateTime.now())} • $_currentTime',
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                         color: Color(0xFF2E4B9C),
@@ -343,23 +357,23 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
             ),
-            SizedBox(height: 20),
+            const SizedBox(height: 20),
 
             // Location Info
             Card(
               child: Padding(
-                padding: EdgeInsets.all(16.0),
+                padding: const EdgeInsets.all(16.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
+                    const Text(
                       'Lokasi Terdeteksi',
                       style: TextStyle(
                         fontSize: 16,
                         color: Colors.grey,
                       ),
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
                       _currentRoom?['name'] ?? 'Tidak terdeteksi di ruangan manapun',
                       style: TextStyle(
@@ -369,38 +383,38 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     if (_currentRoom != null) ...[
-                      SizedBox(height: 8),
+                      const SizedBox(height: 8),
                       Text(
                         'Anda berada dalam area ${_currentRoom!['name']}',
-                        style: TextStyle(color: Colors.green),
+                        style: const TextStyle(color: Colors.green),
                       ),
                     ],
                   ],
                 ),
               ),
             ),
-            SizedBox(height: 30),
+            const SizedBox(height: 30),
 
             // Action Buttons
             Row(
               children: [
                 _buildAbsenButton(),
-                SizedBox(width: 12),
+                const SizedBox(width: 12),
                 Expanded(
                   child: OutlinedButton(
                     onPressed: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => IzinPage()),
+                        MaterialPageRoute(builder: (context) => const IzinPage()),
                       );
                     },
                     style: OutlinedButton.styleFrom(
-                      padding: EdgeInsets.symmetric(vertical: 16),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
                       shape: RoundedRectangleBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
                     ),
-                    child: Row(
+                    child: const Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         Icon(Icons.medical_services),
@@ -413,11 +427,11 @@ class _HomePageState extends State<HomePage> {
               ],
             ),
 
-            Spacer(),
+            const Spacer(),
 
             // Mini Map
             Card(
-              child: Container(
+              child: SizedBox(
                 height: 150,
                 width: double.infinity,
                 child: _currentPosition != null
@@ -436,15 +450,15 @@ class _HomePageState extends State<HomePage> {
                               onPressed: () {
                                 Navigator.push(
                                   context,
-                                  MaterialPageRoute(builder: (context) => MapPage()),
+                                  MaterialPageRoute(builder: (context) => const MapPage()),
                                 );
                               },
-                              child: Icon(Icons.fullscreen),
+                              child: const Icon(Icons.fullscreen),
                             ),
                           ),
                         ],
                       )
-                    : Center(
+                    : const Center(
                         child: Column(
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [

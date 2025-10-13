@@ -4,8 +4,10 @@ import 'package:provider/provider.dart';
 import '../services/supabase_service.dart';
 
 class RegisterNamePage extends StatefulWidget {
+  const RegisterNamePage({super.key});
+
   @override
-  _RegisterNamePageState createState() => _RegisterNamePageState();
+  State<RegisterNamePage> createState() => _RegisterNamePageState();
 }
 
 class _RegisterNamePageState extends State<RegisterNamePage> {
@@ -28,22 +30,25 @@ class _RegisterNamePageState extends State<RegisterNamePage> {
           'id': user.id,
           'email': user.email,
           'name': _nameController.text.trim(),
-          'created_at': DateTime.now().toIso8601String(),
         });
 
+        if (!mounted) return;
         // Navigate to home page
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => HomePage()),
+          MaterialPageRoute(builder: (context) => const HomePage()),
         );
       } catch (e) {
+        if (!mounted) return;
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: $e')),
         );
       } finally {
-        setState(() {
-          _isLoading = false;
-        });
+        if (mounted) {
+          setState(() {
+            _isLoading = false;
+          });
+        }
       }
     }
   }
@@ -52,32 +57,32 @@ class _RegisterNamePageState extends State<RegisterNamePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Lengkapi Profil'),
-        backgroundColor: Color(0xFF2E4B9C),
+        title: const Text('Lengkapi Profil'),
+        backgroundColor: const Color(0xFF2E4B9C),
         foregroundColor: Colors.white,
       ),
       body: Padding(
-        padding: EdgeInsets.all(32.0),
+        padding: const EdgeInsets.all(32.0),
         child: Form(
           key: _formKey,
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
+              const Icon(
                 Icons.person_add,
                 size: 80,
                 color: Color(0xFF2E4B9C),
               ),
-              SizedBox(height: 20),
-              Text(
+              const SizedBox(height: 20),
+              const Text(
                 'Lengkapi Data Diri',
                 style: TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              SizedBox(height: 8),
-              Text(
+              const SizedBox(height: 8),
+              const Text(
                 'Masukkan nama lengkap Anda untuk melanjutkan',
                 textAlign: TextAlign.center,
                 style: TextStyle(
@@ -85,10 +90,10 @@ class _RegisterNamePageState extends State<RegisterNamePage> {
                   fontSize: 16,
                 ),
               ),
-              SizedBox(height: 40),
+              const SizedBox(height: 40),
               TextFormField(
                 controller: _nameController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Nama Lengkap',
                   border: OutlineInputBorder(),
                   prefixIcon: Icon(Icons.person),
@@ -100,22 +105,22 @@ class _RegisterNamePageState extends State<RegisterNamePage> {
                   return null;
                 },
               ),
-              SizedBox(height: 30),
+              const SizedBox(height: 30),
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: _isLoading ? null : _submitName,
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Color(0xFF2E4B9C),
+                    backgroundColor: const Color(0xFF2E4B9C),
                     foregroundColor: Colors.white,
-                    padding: EdgeInsets.symmetric(vertical: 16),
+                    padding: const EdgeInsets.symmetric(vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   child: _isLoading
-                      ? CircularProgressIndicator(color: Colors.white)
-                      : Text(
+                      ? const CircularProgressIndicator(color: Colors.white)
+                      : const Text(
                           'Simpan dan Lanjutkan',
                           style: TextStyle(fontSize: 16),
                         ),

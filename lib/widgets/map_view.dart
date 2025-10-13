@@ -9,15 +9,15 @@ class MapView extends StatefulWidget {
   final Map<String, dynamic>? detectedRoom;
 
   const MapView({
-    Key? key,
+    super.key,
     required this.userLat,
     required this.userLng,
     required this.rooms,
     this.detectedRoom,
-  }) : super(key: key);
+  });
 
   @override
-  _MapViewState createState() => _MapViewState();
+  State<MapView> createState() => _MapViewState();
 }
 
 class _MapViewState extends State<MapView> {
@@ -34,37 +34,32 @@ class _MapViewState extends State<MapView> {
     return FlutterMap(
       mapController: _mapController,
       options: MapOptions(
-        center: LatLng(widget.userLat, widget.userLng),
-        zoom: 18.0,
+        initialCenter: LatLng(widget.userLat, widget.userLng),
+        initialZoom: 18.0,
         maxZoom: 18.0,
         minZoom: 16.0,
       ),
       children: [
-        // Tile Layer - OpenStreetMap
         TileLayer(
           urlTemplate: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png',
           userAgentPackageName: 'com.example.absensi_ruangan',
         ),
-
-        // Circle Layer - Radius ruangan
         CircleLayer(
           circles: [
             for (final room in widget.rooms)
               CircleMarker(
                 point: LatLng(room['latitude'], room['longitude']),
                 color: room['id'] == widget.detectedRoom?['id']
-                    ? Colors.green.withOpacity(0.3)
-                    : Colors.blue.withOpacity(0.2),
+                    ? Colors.green.withAlpha((255 * 0.3).toInt())
+                    : Colors.blue.withAlpha((255 * 0.2).toInt()),
                 borderColor: room['id'] == widget.detectedRoom?['id']
                     ? Colors.green
                     : Colors.blue,
                 borderStrokeWidth: 2,
-                radius: 10, // 10 meter radius
+                radius: 10,
               ),
           ],
         ),
-
-        // Marker Layer - Ruangan
         MarkerLayer(
           markers: [
             for (final room in widget.rooms)
@@ -72,7 +67,7 @@ class _MapViewState extends State<MapView> {
                 point: LatLng(room['latitude'], room['longitude']),
                 width: 80,
                 height: 40,
-                builder: (context) => Column(
+                child: Column(
                   children: [
                     Icon(
                       Icons.meeting_room,
@@ -82,21 +77,21 @@ class _MapViewState extends State<MapView> {
                       size: 30,
                     ),
                     Container(
-                      padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
-                        boxShadow: [
+                        boxShadow: const [
                           BoxShadow(
                             color: Colors.black26,
                             blurRadius: 4,
-                            offset: Offset(2,2),
+                            offset: Offset(2, 2),
                           ),
                         ],
                       ),
                       child: Text(
                         room['name'],
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 10,
                           fontWeight: FontWeight.bold,
                           color: Colors.black87,
@@ -108,33 +103,31 @@ class _MapViewState extends State<MapView> {
               ),
           ],
         ),
-
-        // Marker Layer - User Position
         MarkerLayer(
           markers: [
             Marker(
               point: LatLng(widget.userLat, widget.userLng),
-              builder: (context) => Column(
+              child: Column(
                 children: [
-                  Icon(
+                  const Icon(
                     Icons.person_pin_circle,
                     color: Colors.red,
                     size: 40,
                   ),
                   Container(
-                    padding: EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                    padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(12),
-                      boxShadow: [
+                      boxShadow: const [
                         BoxShadow(
                           color: Colors.black26,
                           blurRadius: 4,
-                          offset: Offset(2,2),
+                          offset: Offset(2, 2),
                         ),
                       ],
                     ),
-                    child: Text(
+                    child: const Text(
                       'Anda',
                       style: TextStyle(
                         fontSize: 10,

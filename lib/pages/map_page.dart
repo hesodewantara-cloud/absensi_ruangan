@@ -6,8 +6,10 @@ import '../widgets/map_view.dart';
 import 'package:geolocator/geolocator.dart';
 
 class MapPage extends StatefulWidget {
+  const MapPage({super.key});
+
   @override
-  _MapPageState createState() => _MapPageState();
+  State<MapPage> createState() => _MapPageState();
 }
 
 class _MapPageState extends State<MapPage> {
@@ -43,15 +45,15 @@ class _MapPageState extends State<MapPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Peta Lokasi'),
-        backgroundColor: Color(0xFF2E4B9C),
+        title: const Text('Peta Lokasi'),
+        backgroundColor: const Color(0xFF2E4B9C),
         foregroundColor: Colors.white,
       ),
       body: FutureBuilder<Map<String, dynamic>>(
         future: _locationData,
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           }
 
           if (snapshot.hasError) {
@@ -59,17 +61,17 @@ class _MapPageState extends State<MapPage> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.error, size: 64, color: Colors.red),
-                  SizedBox(height: 16),
+                  const Icon(Icons.error, size: 64, color: Colors.red),
+                  const SizedBox(height: 16),
                   Text('Error: ${snapshot.error}'),
-                  SizedBox(height: 16),
+                  const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: () {
                       setState(() {
                         _locationData = _loadLocationData();
                       });
                     },
-                    child: Text('Coba Lagi'),
+                    child: const Text('Coba Lagi'),
                   ),
                 ],
               ),

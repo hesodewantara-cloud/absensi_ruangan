@@ -3,14 +3,16 @@ import 'package:provider/provider.dart';
 import '../services/supabase_service.dart';
 
 class LoginPage extends StatelessWidget {
+  const LoginPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Color(0xFF2E4B9C),
+      backgroundColor: const Color(0xFF2E4B9C),
       body: SafeArea(
         child: Center(
           child: Padding(
-            padding: EdgeInsets.all(32.0),
+            padding: const EdgeInsets.all(32.0),
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -18,20 +20,20 @@ class LoginPage extends StatelessWidget {
                 Container(
                   width: 120,
                   height: 120,
-                  decoration: BoxDecoration(
+                  decoration: const BoxDecoration(
                     color: Colors.white,
                     shape: BoxShape.circle,
                   ),
-                  child: Icon(
+                  child: const Icon(
                     Icons.fingerprint,
                     size: 60,
                     color: Color(0xFF2E4B9C),
                   ),
                 ),
-                SizedBox(height: 40),
+                const SizedBox(height: 40),
 
                 // Title
-                Text(
+                const Text(
                   'AbsensiRuangan',
                   style: TextStyle(
                     fontSize: 28,
@@ -39,8 +41,8 @@ class LoginPage extends StatelessWidget {
                     color: Colors.white,
                   ),
                 ),
-                SizedBox(height: 8),
-                Text(
+                const SizedBox(height: 8),
+                const Text(
                   'Sistem Absensi Dalam Ruangan',
                   style: TextStyle(
                     fontSize: 16,
@@ -48,7 +50,7 @@ class LoginPage extends StatelessWidget {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                SizedBox(height: 60),
+                const SizedBox(height: 60),
 
                 // Google Sign In Button
                 ElevatedButton(
@@ -64,13 +66,13 @@ class LoginPage extends StatelessWidget {
                   },
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.white,
-                    foregroundColor: Color(0xFF2E4B9C),
-                    padding: EdgeInsets.symmetric(horizontal: 32, vertical: 16),
+                    foregroundColor: const Color(0xFF2E4B9C),
+                    padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
-                  child: Row(
+                  child: const Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Icon(Icons.login),
@@ -85,10 +87,10 @@ class LoginPage extends StatelessWidget {
                     ],
                   ),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
 
                 // Info
-                Text(
+                const Text(
                   'Gunakan akun Google sekolah/kampus',
                   style: TextStyle(
                     color: Colors.white54,

@@ -5,9 +5,9 @@ class SupabaseService {
   final SupabaseClient client = Supabase.instance.client;
 
   // Auth methods
-  Future<AuthResponse> signInWithGoogle() async {
+  Future<bool> signInWithGoogle() async {
     return await client.auth.signInWithOAuth(
-      Provider.google,
+      OAuthProvider.google,
       redirectTo: 'io.supabase.flutter://login-callback/',
     );
   }
@@ -23,7 +23,6 @@ class SupabaseService {
         .select()
         .eq('id', userId)
         .single();
-
     return response;
   }
 
@@ -45,7 +44,6 @@ class SupabaseService {
     final response = await client
         .from('rooms')
         .select();
-
     return response;
   }
 
@@ -64,16 +62,16 @@ class SupabaseService {
   }
 
   // Storage methods
-  Future<String> uploadAttendancePhoto(String filePath, String fileName) async {
+  Future<String> uploadPhoto(String bucket, String filePath, String fileName) async {
     final file = File(filePath);
-    await Supabase.instance.client.storage
-        .from('attendance_photos')
+    await client.storage
+        .from(bucket)
         .upload(fileName, file);
 
-    final response = Supabase.instance.client.storage
-        .from('attendance_photos')
+    final publicUrl = client.storage
+        .from(bucket)
         .getPublicUrl(fileName);
 
-    return response;
+    return publicUrl;
   }
 }
