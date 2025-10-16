@@ -1,0 +1,43 @@
+name: absensi_ruangan
+description: Aplikasi absensi dalam ruangan dengan Supabase
+publish_to: 'none'
+
+version: 1.0.0+1
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+  # UI & Icon
+  cupertino_icons: ^1.0.8
+  lottie: ^3.1.2
+  provider: ^6.1.2
+
+  # Backend & Database
+  supabase_flutter: ^2.5.9
+  http: ^1.2.2
+  intl: ^0.20.2
+
+  # Maps & Geolocation
+  flutter_map: ^8.2.2
+  latlong2: ^0.9.1
+  geolocator: ^14.0.2
+
+  # File, Image & Path
+  file_picker: ^10.3.3
+  image_picker: ^1.1.2
+  path: ^1.9.0
+  image: ^4.2.0
+
+dev_dependencies:
+  flutter_test:
+    sdk: flutter
+  flutter_lints: ^6.0.0
+
+flutter:
+  uses-material-design: true
+ # assets:
+    #- assets/
