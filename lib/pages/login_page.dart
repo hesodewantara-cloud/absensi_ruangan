@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../services/supabase_service.dart';
+import '../services/auth_service.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 
 class LoginPage extends StatelessWidget {
   const LoginPage({super.key});
@@ -55,18 +56,18 @@ class LoginPage extends StatelessWidget {
                 // Google Sign In Button
                 ElevatedButton(
                   onPressed: () async {
-                    // Ambil instance SupabaseService dari Provider
-                    final supabaseService = Provider.of<SupabaseService>(context, listen: false);
+                    // Ambil instance AuthService dari Provider
+                    final authService = Provider.of<AuthService>(context, listen: false);
                     
                     try {
                       // Panggil fungsi login
-                      await supabaseService.signInWithGoogle();
+                      await authService.signInWithGoogle();
                     } catch (e) {
                       // Tampilkan pesan error jika login gagal
                       if (context.mounted) {
                         ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Login Gagal. Silakan coba lagi.'),
+                          SnackBar(
+                            content: Text('Login Gagal: ${e.toString()}'),
                             backgroundColor: Colors.red,
                           ),
                         );
@@ -84,10 +85,10 @@ class LoginPage extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      // Ganti Icon dengan logo Google
-                      Image.asset(
-                        'assets/google_logo.png', // Pastikan Anda punya file ini di folder assets
-                        height: 24.0,
+                      // Menggunakan FontAwesome untuk ikon Google
+                      const Icon(
+                        FontAwesomeIcons.google,
+                        size: 22.0,
                       ),
                       const SizedBox(width: 12),
                       const Text(
