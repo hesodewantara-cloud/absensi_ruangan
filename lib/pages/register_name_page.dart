@@ -1,4 +1,6 @@
-import 'package:absensi_ruangan/pages/home_page.dart';
+// lib/pages/register_name_page.dart
+
+import 'package:absensi_ruangan/pages/main_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/supabase_service.dart';
@@ -36,7 +38,7 @@ class _RegisterNamePageState extends State<RegisterNamePage> {
         // Navigate to home page
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const HomePage()),
+          MaterialPageRoute(builder: (context) => const MainPage()),
         );
       } catch (e) {
         if (!mounted) return;

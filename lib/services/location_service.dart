@@ -1,4 +1,5 @@
 import 'package:geolocator/geolocator.dart';
+import '../models/room_model.dart';
 
 class LocationService {
   Future<Position> getCurrentLocation() async {
@@ -8,7 +9,7 @@ class LocationService {
     // Cek apakah lokasi aktif
     serviceEnabled = await Geolocator.isLocationServiceEnabled();
     if (!serviceEnabled) {
-      throw Exception('Location services are disabled.');
+      throw Exception('Layanan lokasi tidak aktif.');
     }
 
     // Cek izin lokasi
@@ -16,15 +17,14 @@ class LocationService {
     if (permission == LocationPermission.denied) {
       permission = await Geolocator.requestPermission();
       if (permission == LocationPermission.denied) {
-        throw Exception('Location permissions are denied');
+        throw Exception('Izin lokasi ditolak.');
       }
     }
 
     if (permission == LocationPermission.deniedForever) {
-      throw Exception('Location permissions are permanently denied.');
+      throw Exception('Izin lokasi ditolak secara permanen.');
     }
 
-    // ✅ Versi baru dengan parameter locationSettings
     return await Geolocator.getCurrentPosition(
       locationSettings: const LocationSettings(
         accuracy: LocationAccuracy.high,
@@ -33,31 +33,36 @@ class LocationService {
     );
   }
 
-  double calculateDistance(double lat1, double lon1, double lat2, double lon2) {
+  double _calculateDistance(double lat1, double lon1, double lat2, double lon2) {
     return Geolocator.distanceBetween(lat1, lon1, lat2, lon2);
   }
 
-  Future<Map<String, dynamic>?> detectRoom(
+  RoomModel? detectRoom(
     double userLat,
     double userLng,
-    List<dynamic> rooms, {
-    double maxDistance = 10.0,
-  }) async {
+    List<RoomModel> rooms,
+  ) {
+    RoomModel? closestRoom;
+    double closestDistance = double.infinity;
+
     for (final room in rooms) {
-      final distance = calculateDistance(
+      final distance = _calculateDistance(
         userLat,
         userLng,
-        room['latitude'],
-        room['longitude'],
+        room.latitude,
+        room.longitude,
       );
 
-      if (distance <= maxDistance) {
-        return {
-          'room': room,
-          'distance': distance,
-        };
+      if (distance < closestDistance) {
+        closestDistance = distance;
+        closestRoom = room;
       }
     }
+
+    if (closestRoom != null && closestDistance <= closestRoom.radiusMeters) {
+      return closestRoom;
+    }
+
     return null;
   }
 }

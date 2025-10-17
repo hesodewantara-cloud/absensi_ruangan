@@ -1,7 +1,10 @@
+// lib/pages/izin_page.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
+import '../models/sick_leave_model.dart';
 import '../services/supabase_service.dart';
 
 class IzinPage extends StatefulWidget {
@@ -91,16 +94,16 @@ class _IzinPageState extends State<IzinPage> {
           final fileName = 'sick_leave_${user.id}_${DateTime.now().millisecondsSinceEpoch}';
           attachmentUrl = await supabaseService.uploadPhoto('sick_leave_attachments', _attachmentPath!, fileName);
         }
+        final sickLeave = SickLeaveModel(
+          userId: user.id,
+          reason: _reasonController.text.trim(),
+          startDate: _startDate!,
+          endDate: _endDate!,
+          attachmentUrl: attachmentUrl,
+          submittedAt: DateTime.now(),
+        );
 
-        await supabaseService.submitSickLeave({
-          'user_id': user.id,
-          'reason': _reasonController.text.trim(),
-          'start_date': _startDate!.toIso8601String().split('T')[0],
-          'end_date': _endDate!.toIso8601String().split('T')[0],
-          'attachment_url': attachmentUrl,
-          'status': 'Menunggu',
-          'submitted_at': DateTime.now().toIso8601String(),
-        });
+        await supabaseService.submitSickLeave(sickLeave);
 
         if (!mounted) return;
         _showSuccessDialog();
